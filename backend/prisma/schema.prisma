@@ -1,0 +1,57 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  OWNER
+  ADMIN
+  MEMBER
+}
+
+model Organization {
+  id String @id @default(cuid())
+  name String
+  createdAt DateTime @default(now())
+  members Member[]
+  projects Project[]
+}
+
+model User {
+  id String @id @default(cuid())
+  email String @unique
+  name String
+  passwordHash String
+  createdAt DateTime @default(now())
+  memberships Member[]
+}
+
+model Member {
+  id String @id @default(cuid())
+  user_id String
+  org_id String
+  role Role
+  createdAt DateTime @default(now())
+    user         User         @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  organization Organization @relation(fields: [org_id], references: [id], onDelete: Cascade)
+
+  @@unique([user_id, org_id])
+}
+
+model Project {
+  id String @id @default(cuid())
+  name String
+  org_id String
+  createdAt DateTime @default(now())
+  organization Organization @relation(fields: [org_id], references: [id], onDelete: Cascade)
+}
