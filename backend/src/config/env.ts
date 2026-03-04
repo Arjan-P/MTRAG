@@ -6,6 +6,10 @@ dotenv.config({
   path: path.resolve(process.cwd(), ".env"),
 });
 
+if (!process.env.JWT_SECRET) {
+  throw new Error("JWT_SECRET is not defined");
+}
+
 export interface EnvConfig {
   PORT: string;
   JWT_SECRET: string;
