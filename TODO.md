@@ -1,5 +1,5 @@
 **Middleware**:
-Add more middleware to handle other concerns, such as rate limiting and logging.
+Add route specific ratelimiting
 
 **Authentication**
 Implement token blacklisting or revocation to prevent token reuse or abuse.
