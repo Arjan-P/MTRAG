@@ -25,7 +25,6 @@ export const getOrganization = async (user_id: string) => {
   return prisma.member.findMany({
     where: {
       user_id,
-      role: Role.OWNER
     },
     include: {
       organization: true
