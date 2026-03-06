@@ -1,13 +1,21 @@
 import express from "express";
+import morgan from "morgan";
+import userRoutes from "./modules/users/users.routes.js";
+import orgsRoutes from "./modules/orgs/orgs.routes.js";
+
 import type { Request, Response, NextFunction } from "express";
+
 import { ZodError } from "zod";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { UnauthorizedError } from "./lib/errors.js";
-import userRoutes from "./routes/users.routes.js";
 
 const app = express();
 
-app.use('api/user', userRoutes);
+app.use(express.json()); // request body json parser
+app.use(morgan("dev"));  // http request logger
+
+app.use('/api/user', userRoutes);
+app.use('/api/orgs', orgsRoutes);
 
 app.use((req: Request, res: Response) => {
   res.status(404).json({ error: "Route not found" });

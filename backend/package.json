@@ -5,7 +5,11 @@
   "type": "module",
   "scripts": {
     "build": "tsc",
-    "start": "node ./dist/server.js"
+    "start": "node ./dist/server.js",
+    "migrate": "prisma migrate dev",
+    "migrate:test": "dotenv -e .env.test -- prisma migrate deploy",
+    "reset:test": "dotenv -e .env.test -- prisma migrate reset",
+    "test": "vitest"
   },
   "keywords": [],
   "author": "",
@@ -17,8 +21,13 @@
     "@types/dotenv": "^6.1.1",
     "@types/express": "^5.0.6",
     "@types/jsonwebtoken": "^9.0.10",
+    "@types/morgan": "^1.9.10",
+    "@types/supertest": "^7.2.0",
+    "dotenv-cli": "^11.0.0",
     "prisma": "^5.x.x",
-    "typescript": "^5.9.3"
+    "supertest": "^7.2.2",
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.18"
   },
   "dependencies": {
     "@prisma/client": "^5.x.x",
@@ -27,6 +36,7 @@
     "dotenv": "^17.3.1",
     "express": "^5.2.1",
     "jsonwebtoken": "^9.0.3",
+    "morgan": "^1.10.1",
     "zod": "^4.3.6"
   }
 }

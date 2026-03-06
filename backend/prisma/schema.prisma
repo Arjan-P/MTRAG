@@ -42,7 +42,7 @@ model Member {
   org_id String
   role Role
   createdAt DateTime @default(now())
-    user         User         @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  user         User         @relation(fields: [user_id], references: [id], onDelete: Cascade)
   organization Organization @relation(fields: [org_id], references: [id], onDelete: Cascade)
 
   @@unique([user_id, org_id])

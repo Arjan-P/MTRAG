@@ -17,12 +17,20 @@ export const createUserController = async (req: Request, res: Response) => {
 export const getUserController = async (req: Request, res: Response) => {
   const user = await getUser(req.user!.id);
   return res.status(200).json({
-    user
+    id: user?.id,
+    email: user?.email,
+    name: user?.name,
+    createdAt: user?.createdAt
   });
 }
 
 export const loginUserController = async (req: Request, res: Response) => {
   const parsed = loginUserSchema.parse(req.body);
   const result = await loginUser(parsed.email, parsed.password);
-  return res.status(200).json(result);
+  return res.status(200).json({
+    token: result.token,
+    id: result.user.id,
+    email: result.user.email,
+    name: result.user.name,
+  });
 }
