@@ -22,5 +22,29 @@ describe("Project routes", () => {
 
     expect(projCreateRes.status).toBe(201);
     expect(projCreateRes.body.name).toBe("Test Proj");
+  });
+  it("should get an organization project", async () => {
+
+    const token = await createAuthToken();
+    const orgCreateRes = await request(app)
+    .post("/api/orgs")
+    .set("Authorization", `Bearer ${token}`)
+    .send({
+      name: "Test Org"
+    });
+
+    const projCreateRes = await request(app)
+    .post(`/api/orgs/${orgCreateRes.body.id}/projects`)
+    .set("Authorization", `Bearer ${token}`)
+    .send({
+      name: "Test Proj"
+    });
+
+    const projGetRes = await request(app)
+    .get(`/api/orgs/${orgCreateRes.body.id}/projects/${projCreateRes.body.id}`)
+    .set("Authorization", `Bearer ${token}`);
+
+    expect(projGetRes.status).toBe(200);
+    expect(projGetRes.body.name).toBe(projCreateRes.body.name);
   })
 })
