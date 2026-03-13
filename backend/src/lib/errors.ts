@@ -7,4 +7,7 @@ export class UnauthorizedError extends Error {
 
 export class ConflictError extends Error {
   statusCode = 409;
+  constructor(message = "Conflict") {
+    super(message);
+  }
 }

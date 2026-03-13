@@ -1,14 +1,10 @@
 import request from "supertest";
 import app from "../../app.js";
 
-export async function createAuthToken({
-  email = "test@mail.com",
+export async function createUser({
+  email = `user${Date.now()}@mail.com`,
   password = "Password321",
   name = "Test"
-}: {
-  email?: string;
-  password?: string;
-  name?: string;
 } = {}) {
 
   const createRes = await request(app)
@@ -18,10 +14,15 @@ export async function createAuthToken({
   if (createRes.status !== 201 && createRes.status !== 409) {
     throw new Error(`User creation failed: ${createRes.status}`);
   }
+  return { email, password };
+}
 
-  const loginRes = await request(app)
+export async function createAuthToken(user = {}) {
+  const { email, password } = await createUser(user);
+
+  const login = await request(app)
     .post("/api/user/login")
     .send({ email, password });
 
-  return loginRes.body.token;
+  return login.body.token;
 }

@@ -30,7 +30,7 @@ export const orgsAuthMiddleware = async (req: Request, res: Response, next: Next
     return next(new UnauthorizedError("Not a member of this organization"));
   }
 
-  req.user!.membership = membership;
+  req.membership = membership;
 
   next();
 }

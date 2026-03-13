@@ -2,13 +2,18 @@ console.log("Vitest setup loaded");
 // setup env for prisma and config
 process.env.NODE_ENV = "test";
 
-import {beforeEach} from "vitest";
-import {prisma} from "../lib/prisma.js";
+import { beforeEach, afterAll } from "vitest";
+import { prisma } from "../lib/prisma.js";
 
 beforeEach(async () => {
-  console.log("Clearing db");
-  await prisma.$executeRawUnsafe(`
-    TRUNCATE TABLE "User", "Organization", "Member" RESTART IDENTITY CASCADE
-  `);
+  await prisma.$transaction([
+    prisma.member.deleteMany(),
+    prisma.project.deleteMany(),
+    prisma.organization.deleteMany(),
+    prisma.user.deleteMany()
+  ]);
 });
 
+afterAll(async () => {
+  await prisma.$disconnect();
+});

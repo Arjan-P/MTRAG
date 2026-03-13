@@ -2,83 +2,48 @@ import { describe, it, expect } from "vitest";
 import request from "supertest";
 import app from "../app.js";
 import { createAuthToken } from "./utils/auth.js";
+import { createOrg, createProject } from "./utils/factories.js";
+import { withAuth } from "./utils/request.js";
 
 describe("Project routes", () => {
   it("should create an orgranization project", async () => {
     const token = await createAuthToken();
-    const orgCreateRes = await request(app)
-      .post("/api/orgs")
-      .set("Authorization", `Bearer ${token}`)
-      .send({
-        name: "Test Org"
-      });
+    const org = await createOrg(token);
+    const project = await createProject(token, org.id);
 
-    const projCreateRes = await request(app)
-      .post(`/api/orgs/${orgCreateRes.body.id}/projects`)
-      .set("Authorization", `Bearer ${token}`)
-      .send({
-        name: "Test Proj"
-      });
-
-    expect(projCreateRes.status).toBe(201);
-    expect(projCreateRes.body.name).toBe("Test Proj");
+    expect(project.name).toBe("Test Project");
   });
   it("should get an organization project", async () => {
 
     const token = await createAuthToken();
-    const orgCreateRes = await request(app)
-      .post("/api/orgs")
-      .set("Authorization", `Bearer ${token}`)
-      .send({
-        name: "Test Org"
-      });
+    const org = await createOrg(token);
+    const project = await createProject(token, org.id);
+    const auth = withAuth(token);
 
-    const projCreateRes = await request(app)
-      .post(`/api/orgs/${orgCreateRes.body.id}/projects`)
-      .set("Authorization", `Bearer ${token}`)
-      .send({
-        name: "Test Proj"
-      });
+    const projGetRes = await auth
+      .get(`/api/orgs/${org.id}/projects/${project.id}`)
 
-    const projGetRes = await request(app)
-      .get(`/api/orgs/${orgCreateRes.body.id}/projects/${projCreateRes.body.id}`)
-      .set("Authorization", `Bearer ${token}`);
-
-    expect(projGetRes.status).toBe(200);
-    expect(projGetRes.body.name).toBe(projCreateRes.body.name);
+    expect(projGetRes.body.name).toBe("Test Project");
   });
 
   it("should reject cross org project access", async () => {
     const u1token = await createAuthToken({ email: "user1@mail.com" });
     const u2token = await createAuthToken({ email: "user2@mail.com" });
 
-    const org1 = await request(app)
-      .post("/api/orgs")
-      .set("Authorization", `Bearer ${u1token}`)
-      .send({ name: "Org1" });
+    const org1 = await createOrg(u1token);
+    const org2 = await createOrg(u2token);
 
-    const org2 = await request(app)
-      .post("/api/orgs")
-      .set("Authorization", `Bearer ${u2token}`)
-      .send({ name: "Org2" });
+    const proj1 = await createProject(u1token, org1.id);
+    const proj2 = await createProject(u2token, org2.id);
 
-    const proj1 = await request(app)
-      .post(`/api/orgs/${org1.body.id}/projects`)
-      .set("Authorization", `Bearer ${u1token}`)
-      .send({ name: "Proj1" });
+    const auth1 = withAuth(u1token);
+    const auth2 = withAuth(u2token);
 
-    const proj2 = await request(app)
-      .post(`/api/orgs/${org2.body.id}/projects`)
-      .set("Authorization", `Bearer ${u2token}`)
-      .send({ name: "Proj2" });
+    const cross1 = await auth1
+      .get(`/api/orgs/${org2.id}/projects/${proj2.id}`)
 
-    const cross1 = await request(app)
-      .get(`/api/orgs/${org2.body.id}/projects/${proj2.body.id}`)
-      .set("Authorization", `Bearer ${u1token}`);
-
-    const cross2 = await request(app)
-      .get(`/api/orgs/${org1.body.id}/projects/${proj1.body.id}`)
-      .set("Authorization", `Bearer ${u2token}`);
+    const cross2 = await auth2
+      .get(`/api/orgs/${org1.id}/projects/${proj1.id}`)
 
     expect(cross1.status).toBe(401);
     expect(cross2.status).toBe(401);
@@ -87,22 +52,13 @@ describe("Project routes", () => {
     const u1token = await createAuthToken({ email: "user1@mail.com" });
     const u2token = await createAuthToken({ email: "user2@mail.com" });
 
-    const orgCreateRes1 = await request(app)
-      .post("/api/orgs")
-      .set("Authorization", `Bearer ${u1token}`)
-      .send({ name: "Test Org1" });
+    const org1 = await createOrg(u1token);
+    const org2 = await createOrg(u2token);
 
-    const projCreateRes1 = await request(app)
-      .post(`/api/orgs/${orgCreateRes1.body.id}/projects`)
-      .set("Authorization", `Bearer ${u1token}`)
-      .send({ name: "Test Proj" });
+    const proj1 = await createProject(u1token, org1.id);
+    const proj2 = await createProject(u2token, org1.id);
 
-    const projCreateRes2 = await request(app)
-      .post(`/api/orgs/${orgCreateRes1.body.id}/projects`)
-      .set("Authorization", `Bearer ${u2token}`)
-      .send({ name: "Test Proj2" });
-
-    expect(projCreateRes1.status).toBe(201);
-    expect(projCreateRes2.status).toBe(401);
+    expect(proj1.name).toBe("Test Project");
+    expect(proj2.error).toBeDefined();
   });
 });

@@ -1,7 +1,8 @@
-import { describe, it, expect, beforeEach } from "vitest";
+import { describe, it, expect } from "vitest";
 import request from "supertest";
 import app from "../app.js";
-import { prisma } from "../lib/prisma.js";
+import { createAuthToken } from "./utils/auth.js";
+import { withAuth } from "./utils/request.js";
 
 // Follow:
 // Arrange
@@ -24,18 +25,18 @@ describe("User routes", () => {
 
   it("should login with an existing user", async () => {
     await request(app)
-    .post("/api/user")
-    .send({
-      email: "test@mail.com",
-      name: "Test",
-      password: "Password321"
-    });
+      .post("/api/user")
+      .send({
+        email: "test@mail.com",
+        name: "Test",
+        password: "Password321"
+      });
     const res = await request(app)
-    .post("/api/user/login")
-    .send({
-      email: "test@mail.com",
-      password: "Password321"
-    });
+      .post("/api/user/login")
+      .send({
+        email: "test@mail.com",
+        password: "Password321"
+      });
     expect(res.status).toBe(200);
     expect(res.body.email).toBe("test@mail.com");
     expect(res.body.token).toBeDefined();
@@ -43,48 +44,31 @@ describe("User routes", () => {
 
   it("should reject login with incorrect password", async () => {
     await request(app)
-    .post("/api/user")
-    .send({
-      email: "test@mail.com",
-      name: "Test",
-      password: "Password321"
-    });
+      .post("/api/user")
+      .send({
+        email: "test@mail.com",
+        name: "Test",
+        password: "Password321"
+      });
 
     const res = await request(app)
-    .post("/api/user/login")
-    .send({
-      email: "test@mail.com",
-      password: "Password123"
-    });
+      .post("/api/user/login")
+      .send({
+        email: "test@mail.com",
+        password: "Password123"
+      });
 
     expect(res.status).toBe(401);
     expect(res.body.error).toBeDefined();
   });
 
-  it("should get logged in user information", async() => {
-    
-    await request(app)
-    .post("/api/user")
-    .send({
-      email: "test@mail.com",
-      name: "Test",
-      password: "Password123"
-    });
-
-    const loginRes = await request(app)
-    .post("/api/user/login")
-    .send({
-      email: "test@mail.com",
-      password: "Password123"
-    });
-
-    const token = loginRes.body.token;
-
-    const res = await request(app)
-    .get("/api/user/me")
-    .set("Authorization", `Bearer ${token}`);
+  it("should get logged in user information", async () => {
+    const token = await createAuthToken({ email: "user@mail.com" });
+    const auth = withAuth(token);
+    const res = await auth
+      .get("/api/user/me")
 
     expect(res.status).toBe(200);
-    expect(res.body.email).toBe(loginRes.body.email);
+    expect(res.body.email).toBe("user@mail.com");
   });
 });

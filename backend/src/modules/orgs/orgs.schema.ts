@@ -1,3 +1,4 @@
+import { Role } from "@prisma/client";
 import { z } from "zod";
 
 export const createOrgSchema = z.object({
@@ -5,3 +6,9 @@ export const createOrgSchema = z.object({
 })
 
 export type CreateOrgInput = z.infer<typeof createOrgSchema>;
+
+export const inviteUserSchema = z.object({
+  email: z.email(),
+  role: z.enum(Role)
+})
+export type InviteUserInput = z.infer<typeof inviteUserSchema>;
