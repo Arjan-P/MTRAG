@@ -8,7 +8,7 @@ import type { Request, Response, NextFunction } from "express";
 
 import { ZodError } from "zod";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
-import { UnauthorizedError } from "./lib/errors.js";
+import { ConflictError, UnauthorizedError } from "./lib/errors.js";
 
 const apiLimiter = rateLimit({
   windowMs: 60 * 1000,
@@ -33,6 +33,11 @@ app.use((req: Request, res: Response) => {
 
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
   if (err instanceof UnauthorizedError) {
+    return res.status(err.statusCode).json({
+      error: err.message
+    });
+  }
+  if (err instanceof ConflictError) {
     return res.status(err.statusCode).json({
       error: err.message
     });
