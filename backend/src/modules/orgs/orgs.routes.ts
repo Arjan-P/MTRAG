@@ -12,6 +12,6 @@ router.post("/", authMiddleware, asyncHandler(createOrgController));
 router.get("/", authMiddleware, asyncHandler(getOrgController));
 router.post("/:org_id/projects", authMiddleware, asyncHandler(orgsAuthMiddleware), requireOrgRole(['OWNER', 'ADMIN']), asyncHandler(createProjectController));
 router.get("/:org_id/projects/:id", authMiddleware, asyncHandler(orgsAuthMiddleware), asyncHandler(getProjectController));
-router.get("/:org_id/invite", authMiddleware, asyncHandler(orgsAuthMiddleware), requireOrgRole(["ADMIN"]), asyncHandler(inviteUserController));
+router.post("/:org_id/invite", authMiddleware, asyncHandler(orgsAuthMiddleware), requireOrgRole(['OWNER']), asyncHandler(inviteUserController));
 
 export default router;

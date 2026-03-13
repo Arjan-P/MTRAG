@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest";
 import request from "supertest";
 import app from "../app.js";
 import { createAuthToken } from "./utils/auth.js";
-import {createOrg} from "./utils/factories.js";
+import {createOrg, inviteUser} from "./utils/factories.js";
 import {withAuth} from "./utils/request.js"
 
 // Follow:
@@ -27,5 +27,14 @@ describe("Organization routes", () => {
       .get("/api/orgs")
 
     expect(orgGetRequest.status).toBe(200);
+  });
+
+  it("should invite an existing user", async () => {
+    const owner_token = await createAuthToken();
+    await createAuthToken({email: "user@mail.com"});
+    const org = await createOrg(owner_token);
+    const member = await inviteUser(owner_token, org.id, "user@mail.com", "MEMBER");
+
+    expect(member.role).toBe("MEMBER");
   });
 })
