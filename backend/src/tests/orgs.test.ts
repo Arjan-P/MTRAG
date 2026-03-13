@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import request from "supertest";
 import app from "../app.js";
-import {createAuthToken} from "./utils/auth.js";
+import { createAuthToken } from "./utils/auth.js";
 
 // Follow:
 // Arrange
@@ -15,11 +15,11 @@ describe("Organization routes", () => {
     const token = await createAuthToken();
 
     const orgCreateRes = await request(app)
-    .post("/api/orgs")
-    .set("Authorization", `Bearer ${token}`)
-    .send({
-      name: "Test Org",
-    });
+      .post("/api/orgs")
+      .set("Authorization", `Bearer ${token}`)
+      .send({
+        name: "Test Org",
+      });
 
     expect(orgCreateRes.status).toBe(201);
     expect(orgCreateRes.body.name).toBe("Test Org");
@@ -29,8 +29,8 @@ describe("Organization routes", () => {
     const token = await createAuthToken();
 
     const orgGetRequest = await request(app)
-    .get("/api/orgs")
-    .set("Authorization", `Bearer ${token}`)
+      .get("/api/orgs")
+      .set("Authorization", `Bearer ${token}`)
 
     expect(orgGetRequest.status).toBe(200);
   });

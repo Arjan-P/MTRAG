@@ -1,6 +1,6 @@
 import { ENV } from "../../config/env.js";
 import { comparePassword, hashPassword } from "../../lib/bcrypt.js";
-import { UnauthorizedError } from "../../lib/errors.js";
+import { ConflictError, UnauthorizedError } from "../../lib/errors.js";
 import { prisma } from "../../lib/prisma.js";
 import jwt from "jsonwebtoken";
 
@@ -11,7 +11,7 @@ export const createUser = async (email: string, name: string, password: string) 
     }
   });
   if (existing) {
-    throw new Error("User already exists");
+    throw new ConflictError("User already exists");
   }
 
   const hashedPassword = await hashPassword(password);

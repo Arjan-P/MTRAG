@@ -4,3 +4,7 @@ export class UnauthorizedError extends Error {
     super(message);
   }
 }
+
+export class ConflictError extends Error {
+  statusCode = 409;
+}

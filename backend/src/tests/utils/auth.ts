@@ -1,17 +1,27 @@
 import request from "supertest";
 import app from "../../app.js";
 
-export async function createAuthToken() {
-  await request(app).post("/api/user").send({
-    email: "test@mail.com",
-    name: "Test",
-    password: "Password321"
-  });
+export async function createAuthToken({
+  email = "test@mail.com",
+  password = "Password321",
+  name = "Test"
+}: {
+  email?: string;
+  password?: string;
+  name?: string;
+} = {}) {
 
-  const login = await request(app).post("/api/user/login").send({
-    email: "test@mail.com",
-    password: "Password321"
-  });
+  const createRes = await request(app)
+    .post("/api/user")
+    .send({ email, name, password });
 
-  return login.body.token;
+  if (createRes.status !== 201 && createRes.status !== 409) {
+    throw new Error(`User creation failed: ${createRes.status}`);
+  }
+
+  const loginRes = await request(app)
+    .post("/api/user/login")
+    .send({ email, password });
+
+  return loginRes.body.token;
 }

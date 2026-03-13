@@ -17,8 +17,7 @@ export const createProjectController = async (req: Request, res: Response) => {
 }
 
 export const getProjectController = async (req: Request, res: Response) => {
-  const org_id = req.params.org_id;
-  const id = req.params.id;
+  const {org_id, id} = req.params;
 
   if(typeof org_id !== "string") {
     return res.status(400).json({error: "invalid org id"});
@@ -27,7 +26,7 @@ export const getProjectController = async (req: Request, res: Response) => {
     return res.status(400).json({error: "invalid project id"});
   }
 
-  const project = await getProject(id);
+  const project = await getProject(id, org_id);
   if(!project) {
     return res.status(404).json({error: "project not found"});
   }

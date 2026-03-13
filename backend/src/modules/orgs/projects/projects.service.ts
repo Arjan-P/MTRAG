@@ -1,8 +1,11 @@
 import { prisma } from "../../../lib/prisma.js";
 
-export const getProject = async (id: string) => {
+export const getProject = async (id: string, org_id: string) => {
   return prisma.project.findUnique({
-    where: {id}
+    where: {
+      id,
+      org_id
+    }
   });
 }
 
