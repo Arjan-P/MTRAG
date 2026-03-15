@@ -19,12 +19,20 @@ enum Role {
   MEMBER
 }
 
+enum DocumentStatus {
+  UPLOADING
+  PROCESSING
+  READY
+  FAILED
+}
+
 model Organization {
   id String @id @default(cuid())
   name String
   createdAt DateTime @default(now())
   members Member[]
   projects Project[]
+  documents Document[]
 }
 
 model User {
@@ -34,6 +42,7 @@ model User {
   passwordHash String
   createdAt DateTime @default(now())
   memberships Member[]
+  documents Document[]
 }
 
 model Member {
@@ -54,4 +63,23 @@ model Project {
   org_id String
   createdAt DateTime @default(now())
   organization Organization @relation(fields: [org_id], references: [id], onDelete: Cascade)
+  documents Document[]
+
+  @@unique([id, org_id])
+}
+
+model Document {
+  id String @id @default(cuid())
+  name String
+  key String
+  mimeType String
+  size Int
+  status DocumentStatus @default(UPLOADING)
+  org_id String
+  project_id String
+  uploadedBy String?
+  createdAt DateTime @default(now())
+  organization Organization @relation(fields: [org_id], references: [id])
+  uploader User? @relation(fields: [uploadedBy], references: [id], onDelete: SetNull)
+  project Project @relation(fields: [project_id], references: [id], onDelete: Cascade)
 }
