@@ -7,6 +7,7 @@
     "build": "tsc",
     "start": "node ./dist/server.js",
     "migrate": "prisma migrate dev",
+    "reset": "dotenv -e .env -- prisma migrate reset",
     "migrate:test": "dotenv -e .env.test -- prisma migrate deploy",
     "reset:test": "dotenv -e .env.test -- prisma migrate reset",
     "test": "vitest"
