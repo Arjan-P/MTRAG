@@ -10,11 +10,28 @@
 //   ]
 // }
 {
+  // "compilerOptions": {
+  //   "baseUrl": ".",
+  //   "paths": {
+  //     "@/*": [
+  //       "src/*"
+  //     ]
+  //   }
+  // },
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
       "@/*": [
         "src/*"
+      ],
+      "@/shared/*": [
+        "src/shared/*"
+      ],
+      "@/modules/*": [
+        "src/modules/*"
+      ],
+      "@/routes/*": [
+        "src/routes/*"
       ]
     }
   },
