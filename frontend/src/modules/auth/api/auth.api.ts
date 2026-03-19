@@ -1,7 +1,7 @@
 import { api } from "@/shared/api/client";
 
-export const registerApi = async (data: { email: string; password: string }) => {
-  const res = await api.post("/api/users", data);
+export const registerApi = async (data: { name: string, email: string; password: string }) => {
+  const res = await api.post("/api/user", data);
   return res.data as {
     id: string;
     email: string;

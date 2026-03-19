@@ -1,6 +1,7 @@
 import express from "express";
 import morgan from "morgan";
 import rateLimit from "express-rate-limit";
+import cors from "cors";
 import userRoutes from "./modules/users/users.routes.js";
 import orgsRoutes from "./modules/orgs/orgs.routes.js";
 
@@ -23,6 +24,10 @@ const app = express();
 app.use(express.json()); // request body json parser
 app.use(morgan("dev"));  // http request logger
 app.use(apiLimiter);     // enforce api request limit within a time window
+app.use(cors({
+  origin: "http://localhost:5173", // your frontend URL
+  credentials: true
+}));
 
 app.use('/api/user', userRoutes);
 app.use('/api/orgs', orgsRoutes);

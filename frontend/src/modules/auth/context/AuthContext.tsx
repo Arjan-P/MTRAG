@@ -49,7 +49,7 @@ export const AuthProvider = ({children} : {children: ReactNode}) => {
       }
     }
     fetchUser();
-  })
+  }, [token])
 
   useEffect(() => {
     setupInterceptors(() => tokenRef.current, logout)
