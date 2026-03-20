@@ -16,6 +16,7 @@ import {
   FieldLabel,
 } from "@/shared/ui/field"
 import { Input } from "@/shared/ui/input"
+import { toast } from "sonner"; 
 
 export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
   const {handleSignup, loading} = useSignup();
@@ -26,7 +27,13 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
 
   const handleSubmit = async (e: React.SubmitEvent) => {
     e.preventDefault();
-    handleSignup(name, email, password);
+    try {
+      await handleSignup(name, email, password, confirmedPassword);
+      toast.success("Account Created");
+    } catch(err: any) {
+      console.log(err.message);
+      toast.error(err.message);
+    }
   }
 
   return (
