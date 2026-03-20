@@ -1,5 +1,6 @@
 import { useState } from "react"
 import {useSignup} from "../hooks/useSignup";
+import { Link, useNavigate } from "react-router-dom";
 
 import { Button } from "@/shared/ui/button"
 import {
@@ -16,9 +17,10 @@ import {
   FieldLabel,
 } from "@/shared/ui/field"
 import { Input } from "@/shared/ui/input"
-import { toast } from "sonner"; 
+import { toast } from "sonner";
 
 export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
+  const navigate = useNavigate();
   const {handleSignup, loading} = useSignup();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -27,7 +29,9 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
 
   const handleSubmit = async (e: React.SubmitEvent) => {
     e.preventDefault();
-    await handleSignup(name, email, password, confirmedPassword);
+    await handleSignup(name, email, password);
+    toast.success("Account Created");
+    navigate("/login");
   }
 
   return (
@@ -95,7 +99,7 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
                   {loading ? "Creating Account..." : "Create Account"}
                 </Button>
                 <FieldDescription className="px-6 text-center">
-                  Already have an account? <a href="#">Sign in</a>
+                  Already have an account? <Link to={"/login"}>Sign in</Link>
                 </FieldDescription>
               </Field>
             </FieldGroup>
