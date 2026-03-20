@@ -27,13 +27,7 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
 
   const handleSubmit = async (e: React.SubmitEvent) => {
     e.preventDefault();
-    try {
-      await handleSignup(name, email, password, confirmedPassword);
-      toast.success("Account Created");
-    } catch(err: any) {
-      console.log(err.message);
-      toast.error(err.message);
-    }
+    await handleSignup(name, email, password, confirmedPassword);
   }
 
   return (

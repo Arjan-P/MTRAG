@@ -1,4 +1,6 @@
+import { toast } from "sonner";
 import {api} from "./client";
+import { getErrorMessage } from "./error";
 
 export const setupInterceptors = (getToken: () => string | null, logout: () => void) => {
   api.interceptors.request.use((config) => {
@@ -12,9 +14,9 @@ export const setupInterceptors = (getToken: () => string | null, logout: () => v
   api.interceptors.response.use(
     (res) => res,
     (err) => {
-      if(err.response.status === 401) {
-        logout();
-      }
+      const message = getErrorMessage(err);
+      // handle specific error
+      toast.error(message);
       return Promise.reject(err);
     }
   )
